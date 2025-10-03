@@ -1,29 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'product_model.freezed.dart';
 part 'product_model.g.dart';
 
-@HiveType(typeId: 0)
-class ProductModel extends HiveObject {
-  @HiveField(0)
-  String name;
+@freezed
+class ProductModel with _$ProductModel {
+  @HiveType(typeId: 0, adapterName: 'ProductModelAdapter')
+  const factory ProductModel({
+    @HiveField(0) required String name,
+    @HiveField(1) required String desc,
+    @HiveField(2) required int price,
+    @HiveField(3) required String image,
+    @HiveField(4) required String category,
+  }) = _ProductModel;
 
-  @HiveField(1)
-  String desc;
-
-  @HiveField(2)
-  int price;
-
-  @HiveField(3)
-  String image;
-
-  @HiveField(4)
-  String category;
-
-  ProductModel({
-    required this.name,
-    required this.desc,
-    required this.price,
-    required this.image,
-    required this.category,
-  });
+  factory ProductModel.fromJson(Map<String, dynamic> json) =>
+      _$ProductModelFromJson(json);
 }

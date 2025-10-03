@@ -20,10 +20,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
     final user = HiveService.getUser();
     if (user != null) {
-      firstNameCtrl.text = user['firstName'] ?? '';
-      lastNameCtrl.text = user['lastName'] ?? '';
-      usernameCtrl.text = user['username'] ?? '';
-      emailCtrl.text = user['email'] ?? '';
+      firstNameCtrl.text = user?.firstName ?? '';
+      lastNameCtrl.text = user?.lastName ?? '';
+      usernameCtrl.text = user?.username ?? '';
+      emailCtrl.text = user?.email ?? '';
     }
   }
 

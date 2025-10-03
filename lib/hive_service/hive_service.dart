@@ -1,124 +1,55 @@
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../model/product_model.dart';
+import '../model/user_model.dart';
 
 class HiveService {
-  static late Box userBox;
+  static late Box<User> userBox;
   static late Box cartBox;
   static late Box<ProductModel> productBox;
   static late Box ordersBox;
   static late Box authBox;
 
   static String? currentUsername;
+
   static Future<void> init() async {
-    userBox = await Hive.openBox('users');
+    userBox = await Hive.openBox<User>('users');
     cartBox = await Hive.openBox('cart');
     productBox = await Hive.openBox<ProductModel>('products');
     ordersBox = await Hive.openBox('orders');
     authBox = await Hive.openBox('auth');
+
     currentUsername = authBox.get('loggedInUser');
   }
 
-  static Future<void> initDefaultProducts() async {
-    List<ProductModel> defaultProducts = [
-      ProductModel(
-        name: "Helmet",
-        desc: "Safety helmet for motorbikes",
-        price: 1200,
-        image: "assets/images/helmet.webp",
-        category: "Helmets",
-      ),
-      ProductModel(
-        name: "Motor Gloves",
-        desc: "Protective gloves for riding",
-        price: 350,
-        image: "assets/images/gloves.webp",
-        category: "Gloves",
-      ),
-      ProductModel(
-        name: "Riding Jacket",
-        desc: "Leather riding jacket",
-        price: 2500,
-        image: "assets/images/jackets.webp",
-        category: "Accessories",
-      ),
-      ProductModel(
-        name: "Motorcycle Grip",
-        desc: "Handle grip universal",
-        price: 140,
-        image: "assets/images/grip.webp",
-        category: "Accessories",
-      ),
-      ProductModel(
-        name: "Motor Cycle Cover",
-        desc: "Motowolf motor cycle cover",
-        price: 400,
-        image: "assets/images/cover.webp",
-        category: "Accessories",
-      ),
-      ProductModel(
-        name: "Seat",
-        desc: "Leather riding seat",
-        price: 1500,
-        image: "assets/images/seat.webp",
-        category: "Accessories",
-      ),
-      ProductModel(
-        name: "Side Mirror",
-        desc: "Carbon case glass",
-        price: 200,
-        image: "assets/images/mirror.webp",
-        category: "Accessories",
-      ),
-      ProductModel(
-        name: "Wheel",
-        desc: "Wheels made to cope with radial and axial forces",
-        price: 5000,
-        image: "assets/images/wheel.webp",
-        category: "Accessories",
-      ),
-      ProductModel(
-        name: "Shoes",
-        desc: "Made to cope leather",
-        price: 2000,
-        image: "assets/images/shoes.jpg",
-        category: "Shoes",
-      ),
-    ];
-
-    for (var product in defaultProducts) {
-      bool exists = productBox.values.any((p) => p.name == product.name);
-      if (!exists) {
-        await productBox.add(product);
-      }
-    }
-  }
-
-  static List<ProductModel> getAllProducts() => productBox.values.toList();
   static Future<bool> saveUser({
     required String firstName,
     required String lastName,
     required String username,
     required String email,
     required String password,
+    String? profilePic,
   }) async {
     if (userBox.containsKey(username)) return false;
 
-    await userBox.put(username, {
-      'firstName': firstName,
-      'lastName': lastName,
-      'username': username,
-      'email': email,
-      'password': password,
-    });
+    final user = User(
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      email: email,
+      password: password,
+    );
 
+    await userBox.put(username, user);
     return true;
   }
 
   static Future<bool> validateLogin(String username, String password) async {
     if (!userBox.containsKey(username)) return false;
 
-    final user = Map<String, dynamic>.from(userBox.get(username));
-    if (user['password'] == password) {
+    final user = userBox.get(username);
+    if (user == null) return false;
+
+    if (user.password == password) {
       currentUsername = username;
       await authBox.put('loggedInUser', username);
       return true;
@@ -126,32 +57,14 @@ class HiveService {
     return false;
   }
 
+  static User? getUser() {
+    if (currentUsername == null) return null;
+    return userBox.get(currentUsername!);
+  }
+
   static Future<void> logout() async {
     currentUsername = null;
     await authBox.delete('loggedInUser');
-  }
-
-  static Map<String, dynamic>? getUser() {
-    if (currentUsername == null) return null;
-    final raw = userBox.get(currentUsername!);
-    if (raw == null) return null;
-    return Map<String, dynamic>.from(raw);
-  }
-
-  static Future<void> updateUsername(String newUsername) async {
-    if (currentUsername == null) return;
-    if (userBox.containsKey(newUsername)) {
-      throw Exception("Username already exists");
-    }
-
-    final user = getUser();
-    if (user == null) return;
-
-    await userBox.put(newUsername, {...user, 'username': newUsername});
-    await userBox.delete(currentUsername!);
-
-    currentUsername = newUsername;
-    await authBox.put('loggedInUser', newUsername);
   }
 
   static Future<void> updateUserProfile({
@@ -163,11 +76,39 @@ class HiveService {
     final user = getUser();
     if (user == null) return;
 
-    user['firstName'] = firstName;
-    user['lastName'] = lastName;
-    user['email'] = email;
+    final updated = User(
+      firstName: firstName,
+      lastName: lastName,
+      username: user.username,
+      email: email,
+      password: user.password,
+    );
 
-    await userBox.put(currentUsername!, user);
+    await userBox.put(currentUsername!, updated);
+  }
+
+  static Future<void> updateUsername(String newUsername) async {
+    if (currentUsername == null) return;
+    if (userBox.containsKey(newUsername)) {
+      throw Exception("Username already exists");
+    }
+
+    final user = getUser();
+    if (user == null) return;
+
+    final updated = User(
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: newUsername,
+      email: user.email,
+      password: user.password,
+    );
+
+    await userBox.put(newUsername, updated);
+    await userBox.delete(currentUsername!);
+
+    currentUsername = newUsername;
+    await authBox.put('loggedInUser', newUsername);
   }
 
   static Future<void> editProfile({
@@ -193,6 +134,50 @@ class HiveService {
     );
   }
 
+  static Future<void> initDefaultProducts() async {
+    final defaultProducts = [
+      ProductModel(
+        name: "Racing Helmet",
+        desc: "Matibay at premium na helmet para safe rides.",
+        price: 3500,
+        image: "assets/images/helmet.webp",
+        category: "Helmets",
+      ),
+      ProductModel(
+        name: "Rider Gloves",
+        desc: "Comfortable gloves para proteksyon sa kamay.",
+        price: 1200,
+        image: "assets/images/gloves.webp",
+        category: "Gloves",
+      ),
+      ProductModel(
+        name: "Rider Jacket",
+        desc: "Waterproof jacket para sa maulan na biyahe.",
+        price: 2800,
+        image: "assets/images/jackets.webp",
+        category: "Jackets",
+      ),
+      ProductModel(
+        name: "Motorcycle Shoes",
+        desc: "Matibay at stylish na pang-ride shoes.",
+        price: 4200,
+        image: "assets/images/shoes.webp",
+        category: "Shoes",
+      ),
+      ProductModel(
+        name: "Alloy Wheel",
+        desc: "Premium wheels para sa matatag na ride.",
+        price: 6000,
+        image: "assets/images/wheel.webp",
+        category: "Accessories",
+      ),
+    ];
+
+    for (var product in defaultProducts) {
+      await productBox.put(product.name, product);
+    }
+  }
+
   static List<Map<String, dynamic>> getCart() {
     if (currentUsername == null) return [];
     final rawList = cartBox.get(currentUsername!, defaultValue: []);
@@ -201,6 +186,10 @@ class HiveService {
             (rawList as List).map((e) => Map<String, dynamic>.from(e)),
           )
         : [];
+  }
+
+  static List<ProductModel> getAllProducts() {
+    return productBox.values.toList();
   }
 
   static Future<void> addToCart(Map<String, dynamic> product) async {

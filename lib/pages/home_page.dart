@@ -4,7 +4,7 @@ import '../hive_service/hive_service.dart';
 import '../model/product_model.dart';
 import 'order_history_page.dart';
 import '../pages/edit_profile.dart';
-import '../pages/cart_page.dart'; // ✅ use Bloc-based CartPage
+import '../pages/cart_page.dart';
 import '../bloc/cart/cart_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,11 +21,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      _buildProductsPage(), // Home
-      const CartPage(), // ✅ Bloc-based Cart Page
-      _buildProfilePage(), // Profile
-    ];
+    final pages = [_buildProductsPage(), const CartPage(), _buildProfilePage()];
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +32,6 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
         actions: [
-          // 📜 Order History Icon
           IconButton(
             icon: const Icon(Icons.history, color: Colors.white),
             tooltip: "Order History",
@@ -70,7 +65,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ---------------- Products Page ----------------
   Widget _buildProductsPage() {
     List<ProductModel> allProducts = HiveService.getAllProducts();
 
@@ -88,7 +82,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔍 Search bar
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
@@ -109,8 +102,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-
-            // 🔹 Banner
             SizedBox(
               height: 180,
               child: PageView(
@@ -128,8 +119,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // 🔹 Categories
             SizedBox(
               height: 40,
               child: ListView(
@@ -145,8 +134,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // 🔹 Popular Products
             _sectionTitle("Popular Products"),
             SizedBox(
               height: 240,
@@ -164,10 +151,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // 🔹 Recommended Products
             _sectionTitle("Recommended for You"),
             GridView.builder(
               padding: const EdgeInsets.all(16),
@@ -190,7 +174,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ---------------- Product Card ----------------
   Widget _buildProductCard(ProductModel product) {
     return Container(
       decoration: BoxDecoration(
@@ -293,9 +276,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildProfilePage() {
-    final user = HiveService.getUser() ?? {};
-    final username = user['username'] ?? '';
-    final email = user['email'] ?? '';
+    final user = HiveService.getUser();
+    final username = user?.username ?? '';
+    final email = user?.email ?? '';
 
     return SafeArea(
       child: Column(

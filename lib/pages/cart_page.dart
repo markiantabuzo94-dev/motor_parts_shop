@@ -1,8 +1,6 @@
-// lib/pages/cart_page.dart
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../hive_service/hive_service.dart';
-import 'order_history_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -127,16 +125,9 @@ class CartPage extends StatelessWidget {
                         backgroundColor: Colors.purpleAccent,
                       ),
                       onPressed: () async {
-                        await HiveService.checkout(); // save orders + clear cart
+                        await HiveService.checkout();
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Checkout successful!")),
-                        );
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const OrderHistoryPage(),
-                          ),
                         );
                       },
                       child: const Text("Checkout"),

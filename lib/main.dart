@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'hive_service/hive_service.dart';
+import 'model/user_model.dart';
 import 'model/product_model.dart';
 import 'bloc/cart/cart_bloc.dart';
 import 'bloc/auth/auth_bloc.dart';
@@ -13,11 +15,17 @@ import 'pages/cart_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Init Hive
   await Hive.initFlutter();
+
+  // Register Adapters BEFORE opening any box
+  Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ProductModelAdapter());
 
+  // Open boxes here
   await HiveService.init();
 
+  // Seed default products kung empty
   if (HiveService.getAllProducts().isEmpty) {
     await HiveService.initDefaultProducts();
   }
@@ -46,9 +54,9 @@ class MyApp extends StatelessWidget {
                 body: Center(child: CircularProgressIndicator()),
               );
             } else if (state is AuthAuthenticated) {
-              return const HomePage();
-            } else {
               return const LoginPage();
+            } else {
+              return const HomePage();
             }
           },
         ),
