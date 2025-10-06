@@ -1,0 +1,18 @@
+image: node:latest
+
+pages:
+  stage: deploy
+  script:
+    - apt-get update -y
+    - apt-get install -y wget unzip
+    - wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.22.2-stable.tar.xz
+    - tar xf flutter_linux_3.22.2-stable.tar.xz
+    - export PATH="$PATH:`pwd`/flutter/bin"
+    - flutter config --enable-web
+    - flutter build web
+    - mv build/web public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
