@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../hive_service/hive_service.dart';
+import '../../hive_service/hive_service.dart';
 
 part 'order_event.dart';
 part 'order_state.dart';

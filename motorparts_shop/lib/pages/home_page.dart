@@ -103,18 +103,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(
-              height: 180,
+              height: 200,
               child: PageView(
                 children: [
                   _banner("assets/images/helmet.webp", "Big Sale on Helmets!"),
-                  _banner(
-                    "assets/images/jackets.webp",
-                    "Rider Jackets Discount",
-                  ),
-                  _banner(
-                    "assets/images/wheel.webp",
-                    "Premium Wheels Available",
-                  ),
+                  _banner("assets/images/jackets.webp", "Rider Jackets Sale"),
+                  _banner("assets/images/wheel.webp", "Premium Wheels!"),
                 ],
               ),
             ),
@@ -135,30 +129,16 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
             _sectionTitle("Popular Products"),
-            SizedBox(
-              height: 240,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: filteredProducts.length,
-                itemBuilder: (context, index) {
-                  final p = filteredProducts[index];
-                  return Container(
-                    width: 160,
-                    margin: const EdgeInsets.only(right: 12),
-                    child: _buildProductCard(p),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            _sectionTitle("Recommended for You"),
             GridView.builder(
               padding: const EdgeInsets.all(16),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: MediaQuery.of(context).size.width > 900
+                    ? 4
+                    : MediaQuery.of(context).size.width > 600
+                    ? 3
+                    : 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 childAspectRatio: 0.72,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,17 +16,11 @@ import 'pages/cart_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Init Hive
   await Hive.initFlutter();
-
-  // Register Adapters BEFORE opening any box
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ProductModelAdapter());
-
-  // Open boxes here
   await HiveService.init();
 
-  // Seed default products kung empty
   if (HiveService.getAllProducts().isEmpty) {
     await HiveService.initDefaultProducts();
   }
@@ -47,19 +42,21 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Yeji Motor Shop',
         theme: ThemeData.dark(),
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            } else if (state is AuthAuthenticated) {
-              return const LoginPage();
-            } else {
-              return const HomePage();
-            }
-          },
-        ),
+        home: kIsWeb
+            ? const HomePage() // 🖥 Web = show homepage
+            : BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state is AuthLoading) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  } else if (state is AuthAuthenticated) {
+                    return const HomePage(); // ✅ app login success → HomePage
+                  } else {
+                    return const LoginPage(); // 📱 app start → LoginPage
+                  }
+                },
+              ),
         routes: {
           "/loginpage": (_) => const LoginPage(),
           "/signup": (_) => const SignUpPage(),
