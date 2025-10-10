@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../hive_service/hive_service.dart';
 import '../model/product_model.dart';
 import 'order_history_page.dart';
-import '../pages/edit_profile.dart';
-import '../pages/cart_page.dart';
+import '../screens/edit_profile.dart';
+import 'cart_page.dart';
 import '../bloc/cart/cart_bloc.dart';
+import '../screens/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,7 +22,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = [_buildProductsPage(), const CartPage(), _buildProfilePage()];
+    final pages = [
+      _buildProductsPage(context),
+      const CartPage(),
+      SafeArea(child: const ProfilePage()),
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -31,41 +36,63 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history, color: Colors.white),
-            tooltip: "Order History",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const OrderHistoryPage()),
-              );
-            },
-          ),
-        ],
       ),
       backgroundColor: Colors.grey[900],
-      body: pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[900],
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: Colors.purpleAccent,
-        unselectedItemColor: Colors.white54,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: "Cart",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Row(
+            children: [
+              if (constraints.maxWidth > 900)
+                NavigationRail(
+                  backgroundColor: Colors.grey[850],
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: (index) =>
+                      setState(() => _currentIndex = index),
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text("Home"),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.shopping_cart),
+                      label: Text("Cart"),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.person),
+                      label: Text("Profile"),
+                    ),
+                  ],
+                ),
+              Expanded(child: pages[_currentIndex]),
+            ],
+          );
+        },
       ),
+      bottomNavigationBar: MediaQuery.of(context).size.width <= 900
+          ? BottomNavigationBar(
+              backgroundColor: Colors.grey[900],
+              currentIndex: _currentIndex,
+              onTap: (index) => setState(() => _currentIndex = index),
+              selectedItemColor: Colors.purpleAccent,
+              unselectedItemColor: Colors.white54,
+              type: BottomNavigationBarType.fixed,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.shopping_cart),
+                  label: "Cart",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: "Profile",
+                ),
+              ],
+            )
+          : null,
     );
   }
 
-  Widget _buildProductsPage() {
+  Widget _buildProductsPage(BuildContext context) {
     List<ProductModel> allProducts = HiveService.getAllProducts();
 
     List<ProductModel> filteredProducts = allProducts.where((p) {
@@ -97,9 +124,7 @@ class _HomePageState extends State<HomePage> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() => _searchQuery = value);
-                },
+                onChanged: (value) => setState(() => _searchQuery = value),
               ),
             ),
             SizedBox(
@@ -107,14 +132,8 @@ class _HomePageState extends State<HomePage> {
               child: PageView(
                 children: [
                   _banner("assets/images/helmet.webp", "Big Sale on Helmets!"),
-                  _banner(
-                    "assets/images/jackets.webp",
-                    "Rider Jackets Discount",
-                  ),
-                  _banner(
-                    "assets/images/wheel.webp",
-                    "Premium Wheels Available",
-                  ),
+                  _banner("assets/images/jackets.webp", "Rider Jackets Sale!"),
+                  _banner("assets/images/wheel.webp", "Premium Wheels Here!"),
                 ],
               ),
             ),
@@ -134,38 +153,30 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            _sectionTitle("Popular Products"),
-            SizedBox(
-              height: 240,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: filteredProducts.length,
-                itemBuilder: (context, index) {
-                  final p = filteredProducts[index];
-                  return Container(
-                    width: 160,
-                    margin: const EdgeInsets.only(right: 12),
-                    child: _buildProductCard(p),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            _sectionTitle("Recommended for You"),
-            GridView.builder(
-              padding: const EdgeInsets.all(16),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.72,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                return _buildProductCard(filteredProducts[index]);
+            _sectionTitle("Products"),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                int crossAxisCount = constraints.maxWidth > 1200
+                    ? 5
+                    : constraints.maxWidth > 900
+                    ? 4
+                    : constraints.maxWidth > 600
+                    ? 3
+                    : 2;
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.72,
+                  ),
+                  itemCount: filteredProducts.length,
+                  itemBuilder: (context, index) =>
+                      _buildProductCard(filteredProducts[index]),
+                );
               },
             ),
           ],
@@ -241,7 +252,6 @@ class _HomePageState extends State<HomePage> {
                       'quantity': 1,
                     }),
                   );
-
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
@@ -271,54 +281,6 @@ class _HomePageState extends State<HomePage> {
         labelStyle: TextStyle(color: selected ? Colors.white : Colors.white70),
         backgroundColor: Colors.grey[850],
         onSelected: (_) => setState(() => _selectedCategory = label),
-      ),
-    );
-  }
-
-  Widget _buildProfilePage() {
-    final user = HiveService.getUser();
-    final username = user?.username ?? '';
-    final email = user?.email ?? '';
-
-    return SafeArea(
-      child: Column(
-        children: [
-          const SizedBox(height: 30),
-          const CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage("assets/images/profile.png"),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            username,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            email,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white70),
-          ),
-          const SizedBox(height: 20),
-          _gradientButton("Edit Profile", () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EditProfilePage()),
-            );
-          }),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: _gradientButton("Logout", () async {
-              await HiveService.logout();
-              Navigator.pushReplacementNamed(context, '/loginpage');
-            }),
-          ),
-        ],
       ),
     );
   }

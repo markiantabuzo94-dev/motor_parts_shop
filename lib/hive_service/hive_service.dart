@@ -21,22 +21,26 @@ class HiveService {
     currentUsername = authBox.get('loggedInUser');
   }
 
+  // ✅ SAVE USER (with optional profilePic)
   static Future<bool> saveUser({
     required String firstName,
     required String lastName,
     required String username,
     required String email,
     required String password,
-    String? profilePic,
+    String? profilePic, // optional, can be null
   }) async {
+    // Check if username already exists
     if (userBox.containsKey(username)) return false;
 
+    // Create new user object
     final user = User(
       firstName: firstName,
       lastName: lastName,
       username: username,
       email: email,
       password: password,
+      profilePic: profilePic ?? 'assets/images/default_profile.jpg',
     );
 
     await userBox.put(username, user);
@@ -82,6 +86,7 @@ class HiveService {
       username: user.username,
       email: email,
       password: user.password,
+      profilePic: user.profilePic,
     );
 
     await userBox.put(currentUsername!, updated);
@@ -102,6 +107,7 @@ class HiveService {
       username: newUsername,
       email: user.email,
       password: user.password,
+      profilePic: user.profilePic,
     );
 
     await userBox.put(newUsername, updated);
