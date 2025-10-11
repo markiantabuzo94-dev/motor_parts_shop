@@ -11,7 +11,13 @@ class HiveService {
 
   static String? currentUsername;
 
+  // ✅ Initialize all Hive boxes
   static Future<void> init() async {
+    await Hive.initFlutter();
+
+    Hive.registerAdapter(UserAdapter());
+    Hive.registerAdapter(ProductModelAdapter());
+
     userBox = await Hive.openBox<User>('users');
     cartBox = await Hive.openBox('cart');
     productBox = await Hive.openBox<ProductModel>('products');
@@ -19,21 +25,25 @@ class HiveService {
     authBox = await Hive.openBox('auth');
 
     currentUsername = authBox.get('loggedInUser');
+
+    // 🧠 Auto-load default products only once
+    if (productBox.isEmpty) {
+      await initDefaultProducts();
+    }
   }
 
-  // ✅ SAVE USER (with optional profilePic)
+  // 🧍 USER MANAGEMENT ----------------------------------------------------
+
   static Future<bool> saveUser({
     required String firstName,
     required String lastName,
     required String username,
     required String email,
     required String password,
-    String? profilePic, // optional, can be null
+    String? profilePic,
   }) async {
-    // Check if username already exists
     if (userBox.containsKey(username)) return false;
 
-    // Create new user object
     final user = User(
       firstName: firstName,
       lastName: lastName,
@@ -49,7 +59,6 @@ class HiveService {
 
   static Future<bool> validateLogin(String username, String password) async {
     if (!userBox.containsKey(username)) return false;
-
     final user = userBox.get(username);
     if (user == null) return false;
 
@@ -71,10 +80,12 @@ class HiveService {
     await authBox.delete('loggedInUser');
   }
 
+  // ✏️ Profile editing
   static Future<void> updateUserProfile({
     required String firstName,
     required String lastName,
     required String email,
+    String? newProfilePic,
   }) async {
     if (currentUsername == null) return;
     final user = getUser();
@@ -86,7 +97,7 @@ class HiveService {
       username: user.username,
       email: email,
       password: user.password,
-      profilePic: user.profilePic,
+      profilePic: newProfilePic ?? user.profilePic,
     );
 
     await userBox.put(currentUsername!, updated);
@@ -122,12 +133,10 @@ class HiveService {
     required String lastName,
     required String username,
     required String email,
+    String? profilePic,
   }) async {
     final oldUsername = currentUsername;
     if (oldUsername == null) return;
-
-    final user = getUser();
-    if (user == null) return;
 
     if (username != oldUsername && username.isNotEmpty) {
       await updateUsername(username);
@@ -137,8 +146,11 @@ class HiveService {
       firstName: firstName,
       lastName: lastName,
       email: email,
+      newProfilePic: profilePic,
     );
   }
+
+  // 🛍 PRODUCT MANAGEMENT --------------------------------------------------
 
   static Future<void> initDefaultProducts() async {
     final defaultProducts = [
@@ -167,7 +179,7 @@ class HiveService {
         name: "Motorcycle Shoes",
         desc: "Matibay at stylish na pang-ride shoes.",
         price: 4200,
-        image: "assets/images/shoes.webp",
+        image: "assets/images/shoes.jpg",
         category: "Shoes",
       ),
       ProductModel(
@@ -179,23 +191,26 @@ class HiveService {
       ),
     ];
 
-    for (var product in defaultProducts) {
-      await productBox.put(product.name, product);
+    // 🔁 Duplicate products to look like a full list
+    for (int i = 0; i < 3; i++) {
+      for (var product in defaultProducts) {
+        await productBox.put("${product.name}_$i", product);
+      }
     }
-  }
-
-  static List<Map<String, dynamic>> getCart() {
-    if (currentUsername == null) return [];
-    final rawList = cartBox.get(currentUsername!, defaultValue: []);
-    return rawList != null
-        ? List<Map<String, dynamic>>.from(
-            (rawList as List).map((e) => Map<String, dynamic>.from(e)),
-          )
-        : [];
   }
 
   static List<ProductModel> getAllProducts() {
     return productBox.values.toList();
+  }
+
+  // 🛒 CART MANAGEMENT ----------------------------------------------------
+
+  static List<Map<String, dynamic>> getCart() {
+    if (currentUsername == null) return [];
+    final rawList = cartBox.get(currentUsername!, defaultValue: []);
+    return List<Map<String, dynamic>>.from(
+      (rawList as List).map((e) => Map<String, dynamic>.from(e)),
+    );
   }
 
   static Future<void> addToCart(Map<String, dynamic> product) async {
@@ -237,9 +252,10 @@ class HiveService {
     await cartBox.put(currentUsername!, []);
   }
 
+  // 🧾 ORDER MANAGEMENT ---------------------------------------------------
+
   static Future<void> checkout() async {
     if (currentUsername == null) return;
-
     final cart = getCart();
     if (cart.isEmpty) return;
 
@@ -276,10 +292,8 @@ class HiveService {
   static List<Map<String, dynamic>> getOrders() {
     if (currentUsername == null) return [];
     final rawList = ordersBox.get(currentUsername!, defaultValue: []);
-    return rawList != null
-        ? List<Map<String, dynamic>>.from(
-            (rawList as List).map((e) => Map<String, dynamic>.from(e)),
-          )
-        : [];
+    return List<Map<String, dynamic>>.from(
+      (rawList as List).map((e) => Map<String, dynamic>.from(e)),
+    );
   }
 }

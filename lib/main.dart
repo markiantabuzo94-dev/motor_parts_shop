@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'hive_service/hive_service.dart';
 import 'model/user_model.dart';
 import 'model/product_model.dart';
@@ -11,21 +11,16 @@ import 'login_pages/login_page.dart';
 import 'login_pages/signup.dart';
 import 'pages/home_page.dart';
 import 'pages/cart_page.dart';
+import 'screens/profile_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Init Hive
   await Hive.initFlutter();
 
-  // Register Adapters BEFORE opening any box
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ProductModelAdapter());
-
-  // Open boxes here
   await HiveService.init();
-
-  // Seed default products kung empty
   if (HiveService.getAllProducts().isEmpty) {
     await HiveService.initDefaultProducts();
   }
@@ -49,22 +44,27 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.dark(),
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            } else if (state is AuthAuthenticated) {
+            if (state is AuthAuthenticated) {
+              return const HomePage();
+            } else if (state is AuthUnauthenticated) {
               return const LoginPage();
             } else {
-              return const HomePage();
+              return const Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: CircularProgressIndicator(color: Colors.purpleAccent),
+                ),
+              );
             }
           },
         ),
+
         routes: {
           "/loginpage": (_) => const LoginPage(),
           "/signup": (_) => const SignUpPage(),
           "/home": (_) => const HomePage(),
           "/cart": (_) => const CartPage(),
+          "/profile": (_) => const ProfilePage(),
         },
       ),
     );

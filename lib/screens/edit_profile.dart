@@ -1,3 +1,4 @@
+// lib/pages/edit_profile.dart
 import 'package:flutter/material.dart';
 import '../hive_service/hive_service.dart';
 
@@ -10,21 +11,37 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final firstNameCtrl = TextEditingController();
-  final lastNameCtrl = TextEditingController();
-  final usernameCtrl = TextEditingController();
-  final emailCtrl = TextEditingController();
+  String? firstName;
+  String? lastName;
+  String? email;
 
   @override
   void initState() {
     super.initState();
     final user = HiveService.getUser();
-    if (user != null) {
-      firstNameCtrl.text = user?.firstName ?? '';
-      lastNameCtrl.text = user?.lastName ?? '';
-      usernameCtrl.text = user?.username ?? '';
-      emailCtrl.text = user?.email ?? '';
-    }
+    firstName = user?.firstName ?? '';
+    lastName = user?.lastName ?? '';
+    email = user?.email ?? '';
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    // Use editProfile to handle username unchanged logic if needed
+    await HiveService.updateUserProfile(
+      firstName: firstName ?? '',
+      lastName: lastName ?? '',
+      email: email ?? '',
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Profile updated'),
+        backgroundColor: Colors.black87,
+      ),
+    );
+    Navigator.pop(context);
   }
 
   @override
@@ -32,73 +49,61 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        title: const Text("Edit Profile"),
+        title: const Text('Edit Profile'),
+        backgroundColor: Colors.black,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.grey[850],
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: firstNameCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: "First Name"),
-                  validator: (val) => val!.isEmpty ? "Enter first name" : null,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                initialValue: firstName,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'First name',
+                  labelStyle: TextStyle(color: Colors.white),
                 ),
-                TextFormField(
-                  controller: lastNameCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: "Last Name"),
-                  validator: (val) => val!.isEmpty ? "Enter last name" : null,
+                onChanged: (v) => firstName = v,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Enter first name' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                initialValue: lastName,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Last name',
+                  labelStyle: TextStyle(color: Colors.white),
                 ),
-                TextFormField(
-                  controller: usernameCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: "Username"),
-                  validator: (val) => val!.isEmpty ? "Enter username" : null,
+                onChanged: (v) => lastName = v,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Enter last name' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                initialValue: email,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
                 ),
-                TextFormField(
-                  controller: emailCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: "Email"),
-                  validator: (val) => val!.isEmpty ? "Enter email" : null,
+                onChanged: (v) => email = v,
+                validator: (v) => (v == null || !v.contains('@'))
+                    ? 'Enter a valid email'
+                    : null,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purpleAccent,
+                  minimumSize: const Size.fromHeight(45),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      try {
-                        await HiveService.editProfile(
-                          firstName: firstNameCtrl.text.trim(),
-                          lastName: lastNameCtrl.text.trim(),
-                          username: usernameCtrl.text.trim(),
-                          email: emailCtrl.text.trim(),
-                        );
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Profile updated!")),
-                        );
-
-                        Navigator.pop(context);
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Error updating profile: $e")),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text("Save Changes"),
-                ),
-              ],
-            ),
+                onPressed: _save,
+                child: const Text('Save Changes'),
+              ),
+            ],
           ),
         ),
       ),

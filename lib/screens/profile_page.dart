@@ -1,134 +1,162 @@
+// lib/pages/profile_page.dart
 import 'package:flutter/material.dart';
 import '../hive_service/hive_service.dart';
-import '../model/user_model.dart';
 import 'edit_profile.dart';
+import '../pages/order_history_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // ✅ Kunin ang kasalukuyang naka-login na user
-    final User? user = HiveService.getUser();
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
-    // ✅ Default display kung wala pa user data
-    final firstName = user?.firstName ?? "Guest";
-    final lastName = user?.lastName ?? "";
-    final email = user?.email ?? "No email available";
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  Widget build(BuildContext context) {
+    final user = HiveService.getUser();
+
+    final displayName = user != null
+        ? "${user.firstName} ${user.lastName}"
+        : "Guest";
+    final email = user?.email ?? "No email";
 
     return Scaffold(
-      appBar: AppBar(title: const Text("My Profile"), centerTitle: true),
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        title: const Text("My Profile"),
+        centerTitle: true,
+        backgroundColor: Colors.black,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/images/profile.jpg'),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage(
+                  user?.profilePic ?? 'assets/images/default_profile.jpg',
                 ),
-                const SizedBox(height: 10),
-
-                // ✅ Display user info from Hive
-                Text(
-                  "$firstName $lastName",
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                backgroundColor: Colors.grey[800],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                displayName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                Text(email, style: const TextStyle(color: Colors.grey)),
+              ),
+              const SizedBox(height: 4),
+              Text(email, style: const TextStyle(color: Colors.white70)),
 
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const EditProfilePage(),
-                      ),
-                    );
-                  },
-                  child: const Text("Edit Profile"),
+              const SizedBox(height: 18),
+
+              ElevatedButton(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                  );
+                  setState(() {}); // refresh after edit
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purpleAccent,
                 ),
+                child: const Text("Edit Profile"),
+              ),
 
-                const Divider(height: 40),
+              const SizedBox(height: 20),
+              const Divider(color: Colors.white12),
 
-                // ✅ Menu section
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.favorite_border),
-                        title: const Text("Favourites"),
-                        onTap: () {},
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.download_outlined),
-                        title: const Text("Downloads"),
-                        onTap: () {},
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.language),
-                        title: const Text("Languages"),
-                        onTap: () {},
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.location_on_outlined),
-                        title: const Text("Location"),
-                        onTap: () {},
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: const Icon(
-                          Icons.logout,
-                          color: Colors.redAccent,
+              // Menu
+              ListTile(
+                leading: const Icon(Icons.favorite_border, color: Colors.white),
+                title: const Text(
+                  "Favourites",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.download_outlined,
+                  color: Colors.white,
+                ),
+                title: const Text(
+                  "Downloads",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {},
+              ),
+
+              // (Languages removed per request)
+              ListTile(
+                leading: const Icon(
+                  Icons.location_on_outlined,
+                  color: Colors.white,
+                ),
+                title: const Text(
+                  "Location",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {},
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.history, color: Colors.white),
+                title: const Text(
+                  "Order History",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const OrderHistoryPage()),
+                  );
+                },
+              ),
+
+              const Divider(color: Colors.white12),
+
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.redAccent),
+                title: const Text(
+                  "Log Out",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Log Out"),
+                      content: const Text("Are you sure you want to log out?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Cancel"),
                         ),
-                        title: const Text("Log Out"),
-                        onTap: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text("Log Out"),
-                              content: const Text(
-                                "Are you sure you want to log out?",
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, false),
-                                  child: const Text("Cancel"),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: const Text("Log Out"),
-                                ),
-                              ],
-                            ),
-                          );
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Log Out"),
+                        ),
+                      ],
+                    ),
+                  );
 
-                          if (confirm == true) {
-                            await HiveService.logout();
-
-                            // ✅ Navigate back to login page
-                            Navigator.of(
-                              context,
-                              rootNavigator: true,
-                            ).pushNamedAndRemoveUntil(
-                              '/loginpage',
-                              (route) => false,
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                  if (confirm == true) {
+                    await HiveService.logout();
+                    // navigate to login page (replace stack)
+                    Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).pushNamedAndRemoveUntil('/loginpage', (r) => false);
+                  }
+                },
+              ),
+            ],
           ),
         ),
       ),
