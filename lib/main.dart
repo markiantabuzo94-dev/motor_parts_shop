@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart'; // 👈 add this
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'hive_service/hive_service.dart';
@@ -16,11 +17,17 @@ import 'screens/profile_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
+  // Fix for GitHub Pages routing
+  setUrlStrategy(const HashUrlStrategy());
 
+  // ✅ Initialize Hive once only
+  await Hive.initFlutter();
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ProductModelAdapter());
+
+  // ✅ Initialize service (no Hive.initFlutter() inside)
   await HiveService.init();
+
   if (HiveService.getAllProducts().isEmpty) {
     await HiveService.initDefaultProducts();
   }

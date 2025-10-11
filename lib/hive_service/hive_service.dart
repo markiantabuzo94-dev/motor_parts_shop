@@ -11,13 +11,8 @@ class HiveService {
 
   static String? currentUsername;
 
-  // ✅ Initialize all Hive boxes
+  // ✅ Initialize all Hive boxes (no initFlutter or adapter registration here)
   static Future<void> init() async {
-    await Hive.initFlutter();
-
-    Hive.registerAdapter(UserAdapter());
-    Hive.registerAdapter(ProductModelAdapter());
-
     userBox = await Hive.openBox<User>('users');
     cartBox = await Hive.openBox('cart');
     productBox = await Hive.openBox<ProductModel>('products');
@@ -26,14 +21,12 @@ class HiveService {
 
     currentUsername = authBox.get('loggedInUser');
 
-    // 🧠 Auto-load default products only once
     if (productBox.isEmpty) {
       await initDefaultProducts();
     }
   }
 
   // 🧍 USER MANAGEMENT ----------------------------------------------------
-
   static Future<bool> saveUser({
     required String firstName,
     required String lastName,
@@ -80,7 +73,6 @@ class HiveService {
     await authBox.delete('loggedInUser');
   }
 
-  // ✏️ Profile editing
   static Future<void> updateUserProfile({
     required String firstName,
     required String lastName,
@@ -151,7 +143,6 @@ class HiveService {
   }
 
   // 🛍 PRODUCT MANAGEMENT --------------------------------------------------
-
   static Future<void> initDefaultProducts() async {
     final defaultProducts = [
       ProductModel(
@@ -191,7 +182,6 @@ class HiveService {
       ),
     ];
 
-    // 🔁 Duplicate products to look like a full list
     for (int i = 0; i < 3; i++) {
       for (var product in defaultProducts) {
         await productBox.put("${product.name}_$i", product);
@@ -204,7 +194,6 @@ class HiveService {
   }
 
   // 🛒 CART MANAGEMENT ----------------------------------------------------
-
   static List<Map<String, dynamic>> getCart() {
     if (currentUsername == null) return [];
     final rawList = cartBox.get(currentUsername!, defaultValue: []);
@@ -253,7 +242,6 @@ class HiveService {
   }
 
   // 🧾 ORDER MANAGEMENT ---------------------------------------------------
-
   static Future<void> checkout() async {
     if (currentUsername == null) return;
     final cart = getCart();
