@@ -11,7 +11,7 @@ class HiveService {
 
   static String? currentUsername;
 
-  // ✅ Initialize all Hive boxes (no initFlutter or adapter registration here)
+  // ✅ Initialize boxes
   static Future<void> init() async {
     userBox = await Hive.openBox<User>('users');
     cartBox = await Hive.openBox('cart');
@@ -26,7 +26,12 @@ class HiveService {
     }
   }
 
-  // 🧍 USER MANAGEMENT ----------------------------------------------------
+  static Future<void> logout() async {
+    await authBox.clear();
+    currentUsername = null;
+  }
+
+  // 🧍‍♂️ User Handling
   static Future<bool> saveUser({
     required String firstName,
     required String lastName,
@@ -68,11 +73,6 @@ class HiveService {
     return userBox.get(currentUsername!);
   }
 
-  static Future<void> logout() async {
-    currentUsername = null;
-    await authBox.delete('loggedInUser');
-  }
-
   static Future<void> updateUserProfile({
     required String firstName,
     required String lastName,
@@ -90,6 +90,7 @@ class HiveService {
       email: email,
       password: user.password,
       profilePic: newProfilePic ?? user.profilePic,
+      location: user.location,
     );
 
     await userBox.put(currentUsername!, updated);
@@ -111,6 +112,7 @@ class HiveService {
       email: user.email,
       password: user.password,
       profilePic: user.profilePic,
+      location: user.location,
     );
 
     await userBox.put(newUsername, updated);
@@ -142,7 +144,25 @@ class HiveService {
     );
   }
 
-  // 🛍 PRODUCT MANAGEMENT --------------------------------------------------
+  static Future<void> updateUserLocation(String newLocation) async {
+    if (currentUsername == null) return;
+    final user = getUser();
+    if (user == null) return;
+
+    final updated = User(
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      profilePic: user.profilePic,
+      location: newLocation,
+    );
+
+    await userBox.put(currentUsername!, updated);
+  }
+
+  // 🏪 Products
   static Future<void> initDefaultProducts() async {
     final defaultProducts = [
       ProductModel(
@@ -193,7 +213,7 @@ class HiveService {
     return productBox.values.toList();
   }
 
-  // 🛒 CART MANAGEMENT ----------------------------------------------------
+  // 🛒 Cart
   static List<Map<String, dynamic>> getCart() {
     if (currentUsername == null) return [];
     final rawList = cartBox.get(currentUsername!, defaultValue: []);
@@ -241,47 +261,76 @@ class HiveService {
     await cartBox.put(currentUsername!, []);
   }
 
-  // 🧾 ORDER MANAGEMENT ---------------------------------------------------
+  // ✅ FIXED checkout
   static Future<void> checkout() async {
     if (currentUsername == null) return;
-    final cart = getCart();
-    if (cart.isEmpty) return;
 
-    await saveOrder(cart);
+    final cartItems = getCart();
+    if (cartItems.isEmpty) return;
+
+    final total = cartItems.fold<double>(0, (sum, item) {
+      final price = (item['price'] as num?)?.toDouble() ?? 0.0;
+      final qty = (item['quantity'] as int?) ?? 1;
+      return sum + price * qty;
+    });
+
+    final rawOrders = ordersBox.get(currentUsername!, defaultValue: []);
+    final existingOrders = List<Map<String, dynamic>>.from(
+      (rawOrders as List).map((e) => Map<String, dynamic>.from(e)),
+    );
+
+    final newOrder = {
+      'id': DateTime.now().millisecondsSinceEpoch,
+      'items': List<Map<String, dynamic>>.from(
+        cartItems.map((e) => Map<String, dynamic>.from(e)),
+      ),
+      'total': total,
+      'date': DateTime.now().toString(),
+    };
+
+    existingOrders.add(newOrder);
+    await ordersBox.put(currentUsername!, existingOrders);
     await clearCart();
   }
 
-  static Future<void> saveOrder(List<Map<String, dynamic>> cart) async {
-    if (currentUsername == null || cart.isEmpty) return;
-
-    List<Map<String, dynamic>> orders =
-        ordersBox
-            .get(currentUsername!, defaultValue: [])
-            ?.cast<Map<String, dynamic>>() ??
-        [];
-
-    double total = cart.fold(
-      0,
-      (sum, item) => sum + (item['price'] as num) * (item['quantity'] ?? 1),
-    );
-
-    final orderId = DateTime.now().millisecondsSinceEpoch;
-
-    orders.add({
-      'id': orderId,
-      'date': DateTime.now().toString(),
-      'items': cart,
-      'total': total,
-    });
-
-    await ordersBox.put(currentUsername!, orders);
-  }
-
+  // ✅ FIXED getOrders
   static List<Map<String, dynamic>> getOrders() {
     if (currentUsername == null) return [];
-    final rawList = ordersBox.get(currentUsername!, defaultValue: []);
+
+    final rawOrders = ordersBox.get(currentUsername!, defaultValue: []);
+    if (rawOrders is! List) return [];
+
     return List<Map<String, dynamic>>.from(
-      (rawList as List).map((e) => Map<String, dynamic>.from(e)),
+      rawOrders.map((order) => Map<String, dynamic>.from(order)),
     );
+  }
+
+  // 🧠 Helpers
+  static Future<void> ensureBoxesOpen() async {
+    if (!Hive.isBoxOpen('users')) {
+      userBox = await Hive.openBox<User>('users');
+    }
+    if (!Hive.isBoxOpen('cart')) {
+      cartBox = await Hive.openBox('cart');
+    }
+    if (!Hive.isBoxOpen('products')) {
+      productBox = await Hive.openBox<ProductModel>('products');
+    }
+    if (!Hive.isBoxOpen('orders')) {
+      ordersBox = await Hive.openBox('orders');
+    }
+    if (!Hive.isBoxOpen('auth')) {
+      authBox = await Hive.openBox('auth');
+    }
+  }
+
+  static Future<void> refreshSession() async {
+    await ensureBoxesOpen();
+    currentUsername = authBox.get('loggedInUser');
+    print(' HiveService.refreshSession() -> currentUsername: $currentUsername');
+  }
+
+  static bool isLoggedIn() {
+    return currentUsername != null && currentUsername!.isNotEmpty;
   }
 }

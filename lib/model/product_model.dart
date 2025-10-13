@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 part 'product_model.freezed.dart';
 part 'product_model.g.dart';
 

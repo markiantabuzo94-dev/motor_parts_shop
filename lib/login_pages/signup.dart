@@ -26,9 +26,9 @@ class _SignUpPageState extends State<SignUpPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.deepPurple, Colors.purpleAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFF8E7), Color(0xFFEBD5B3)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
         child: Center(
@@ -39,7 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 borderRadius: BorderRadius.circular(20),
               ),
               elevation: 8,
-              color: Colors.black.withOpacity(0.75),
+              color: const Color(0xFFF5DEB3).withOpacity(0.9),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Form(
@@ -47,101 +47,60 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      const Icon(
+                        Icons.person_add_alt_1,
+                        color: Color(0xFFB98E5F),
+                        size: 60,
+                      ),
+                      const SizedBox(height: 8),
                       const Text(
                         "Create Account",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.brown,
                         ),
                       ),
                       const SizedBox(height: 8),
                       const Text(
                         "Sign up to get started",
-                        style: TextStyle(color: Colors.white70),
+                        style: TextStyle(color: Colors.brown),
                       ),
                       const SizedBox(height: 24),
-                      TextFormField(
+                      _buildInputField(
                         controller: firstNameCtrl,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration(
-                          hint: "First Name",
-                          icon: Icons.person,
-                        ),
-                        validator: (val) => val == null || val.isEmpty
-                            ? "First name required"
-                            : null,
+                        hint: "First Name",
+                        icon: Icons.person,
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
+                      _buildInputField(
                         controller: lastNameCtrl,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration(
-                          hint: "Last Name",
-                          icon: Icons.person_outline,
-                        ),
-                        validator: (val) => val == null || val.isEmpty
-                            ? "Last name required"
-                            : null,
+                        hint: "Last Name",
+                        icon: Icons.person_outline,
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
+                      _buildInputField(
                         controller: usernameCtrl,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration(
-                          hint: "Username",
-                          icon: Icons.account_circle,
-                        ),
-                        validator: (val) => val == null || val.isEmpty
-                            ? "Username required"
-                            : null,
+                        hint: "Username",
+                        icon: Icons.account_circle,
                       ),
                       const SizedBox(height: 12),
-
-                      // Email
-                      TextFormField(
+                      _buildInputField(
                         controller: emailCtrl,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration(
-                          hint: "Email",
-                          icon: Icons.email,
-                        ),
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return "Email required";
-                          }
-                          if (!val.contains("@") || !val.contains(".")) {
-                            return "Invalid email";
-                          }
-                          return null;
-                        },
+                        hint: "Email",
+                        icon: Icons.email,
                       ),
                       const SizedBox(height: 12),
-
-                      // Password
-                      TextFormField(
+                      _buildInputField(
                         controller: passwordCtrl,
-                        obscureText: true,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration(
-                          hint: "Password",
-                          icon: Icons.lock,
-                        ),
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return "Password required";
-                          }
-                          if (val.length < 6) {
-                            return "Password must be at least 6 chars";
-                          }
-                          return null;
-                        },
+                        hint: "Password",
+                        icon: Icons.lock,
+                        isPassword: true,
                       ),
-
                       const SizedBox(height: 24),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purpleAccent,
+                          backgroundColor: const Color(0xFFB98E5F),
                           foregroundColor: Colors.white,
                           minimumSize: const Size.fromHeight(50),
                           shape: RoundedRectangleBorder(
@@ -203,7 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                         child: const Text(
                           "Already have an account? Login",
-                          style: TextStyle(color: Colors.white70),
+                          style: TextStyle(color: Colors.brown),
                         ),
                       ),
                     ],
@@ -217,20 +176,33 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  InputDecoration _inputDecoration({
+  Widget _buildInputField({
+    required TextEditingController controller,
     required String hint,
     required IconData icon,
+    bool isPassword = false,
   }) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white54),
-      prefixIcon: Icon(icon, color: Colors.white70),
-      filled: true,
-      fillColor: Colors.white.withOpacity(0.1),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide.none,
+    return TextFormField(
+      controller: controller,
+      obscureText: isPassword,
+      style: const TextStyle(color: Colors.brown),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.brown),
+        prefixIcon: Icon(icon, color: Colors.brown),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.6),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
       ),
+      validator: (val) {
+        if (val == null || val.isEmpty) {
+          return "$hint required";
+        }
+        return null;
+      },
     );
   }
 }

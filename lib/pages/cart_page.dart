@@ -1,4 +1,3 @@
-// lib/pages/cart_page.dart
 import 'package:flutter/material.dart';
 import '../hive_service/hive_service.dart';
 import 'order_history_page.dart';
@@ -40,7 +39,7 @@ class _CartPageState extends State<CartPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Cart is empty'),
-          backgroundColor: Colors.black87,
+          backgroundColor: Colors.brown,
         ),
       );
       return;
@@ -52,11 +51,10 @@ class _CartPageState extends State<CartPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Checkout successful!'),
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.brown,
       ),
     );
 
-    // Optional: After checkout, navigate to Order History
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const OrderHistoryPage()),
@@ -65,14 +63,17 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Use ValueListenableBuilder if you want live updates when Hive changes.
+    // 🎨 Light brown tones for the new theme
+    final lightBrown = const Color(0xFFD2B48C); // tan
+    final darkerBrown = const Color(0xFF8B7355); // brown accent
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Cart'),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: darkerBrown,
       ),
-      backgroundColor: Colors.grey[900],
+      backgroundColor: lightBrown,
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -82,7 +83,7 @@ class _CartPageState extends State<CartPage> {
                   ? const Center(
                       child: Text(
                         'Your cart is empty.',
-                        style: TextStyle(color: Colors.white70),
+                        style: TextStyle(color: Colors.black87),
                       ),
                     )
                   : ListView.separated(
@@ -93,26 +94,31 @@ class _CartPageState extends State<CartPage> {
                         final qty = item['quantity'] ?? 1;
 
                         return Card(
-                          color: Colors.grey[850],
+                          color: Colors.brown[200],
                           margin: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: ListTile(
-                            leading: Image.asset(
-                              item['image'] ?? 'assets/images/helmet.webp',
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Image.asset(
-                                'assets/images/helmet.webp',
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                item['image'] ?? 'assets/images/helmet.webp',
+                                width: 56,
+                                height: 56,
                                 fit: BoxFit.cover,
                               ),
                             ),
                             title: Text(
                               item['name'] ?? '',
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             subtitle: Text(
                               "₱${item['price']} x $qty",
-                              style: const TextStyle(color: Colors.white70),
+                              style: const TextStyle(color: Colors.black54),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -120,7 +126,7 @@ class _CartPageState extends State<CartPage> {
                                 IconButton(
                                   icon: const Icon(
                                     Icons.remove,
-                                    color: Colors.white,
+                                    color: Colors.black87,
                                   ),
                                   onPressed: () async {
                                     if (qty > 1) {
@@ -134,12 +140,12 @@ class _CartPageState extends State<CartPage> {
                                 ),
                                 Text(
                                   "$qty",
-                                  style: const TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.black),
                                 ),
                                 IconButton(
                                   icon: const Icon(
                                     Icons.add,
-                                    color: Colors.white,
+                                    color: Colors.black87,
                                   ),
                                   onPressed: () async {
                                     await HiveService.updateCartItem(
@@ -169,12 +175,12 @@ class _CartPageState extends State<CartPage> {
                     ),
             ),
 
-            // Total + Checkout
+            // 💰 Total + Checkout button
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.grey[850],
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.brown[300],
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
@@ -182,7 +188,7 @@ class _CartPageState extends State<CartPage> {
                     child: Text(
                       "Total: ₱${_computeTotal().toStringAsFixed(2)}",
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -190,7 +196,15 @@ class _CartPageState extends State<CartPage> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purpleAccent,
+                      backgroundColor: darkerBrown,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     onPressed: _checkout,
                     child: const Text("Checkout"),

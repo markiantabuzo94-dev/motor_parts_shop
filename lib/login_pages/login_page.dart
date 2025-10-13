@@ -31,9 +31,9 @@ class _LoginPageState extends State<LoginPage> {
           height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.deepPurple, Colors.purpleAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFF8E7), Color(0xFFEBD5B3)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
           child: LayoutBuilder(
@@ -51,40 +51,44 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       elevation: 8,
-                      color: Colors.black.withOpacity(0.75),
+                      color: const Color(0xFFF5DEB3).withOpacity(0.9),
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            const Icon(
+                              Icons.motorcycle,
+                              color: Color(0xFFB98E5F),
+                              size: 60,
+                            ),
+                            const SizedBox(height: 8),
                             const Text(
                               "Welcome Back",
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.brown,
                               ),
                             ),
                             const SizedBox(height: 8),
                             const Text(
                               "Login to continue",
-                              style: TextStyle(color: Colors.white70),
+                              style: TextStyle(color: Colors.brown),
                             ),
                             const SizedBox(height: 24),
                             TextField(
                               controller: usernameCtrl,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.brown),
                               decoration: InputDecoration(
                                 hintText: "Username",
-                                hintStyle: const TextStyle(
-                                  color: Colors.white54,
-                                ),
+                                hintStyle: const TextStyle(color: Colors.brown),
                                 prefixIcon: const Icon(
                                   Icons.person,
-                                  color: Colors.white70,
+                                  color: Colors.brown,
                                 ),
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white.withOpacity(0.6),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
                                   borderSide: BorderSide.none,
@@ -95,18 +99,16 @@ class _LoginPageState extends State<LoginPage> {
                             TextField(
                               controller: passwordCtrl,
                               obscureText: true,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.brown),
                               decoration: InputDecoration(
                                 hintText: "Password",
-                                hintStyle: const TextStyle(
-                                  color: Colors.white54,
-                                ),
+                                hintStyle: const TextStyle(color: Colors.brown),
                                 prefixIcon: const Icon(
                                   Icons.lock,
-                                  color: Colors.white70,
+                                  color: Colors.brown,
                                 ),
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.1),
+                                fillColor: Colors.white.withOpacity(0.6),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
                                   borderSide: BorderSide.none,
@@ -119,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                                 final isLoading = state is AuthLoading;
                                 return ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.purpleAccent,
+                                    backgroundColor: const Color(0xFFB98E5F),
                                     foregroundColor: Colors.white,
                                     minimumSize: const Size.fromHeight(50),
                                     shape: RoundedRectangleBorder(
@@ -164,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                               child: const Text(
                                 "Don’t have an account? Sign up",
-                                style: TextStyle(color: Colors.white70),
+                                style: TextStyle(color: Colors.brown),
                               ),
                             ),
                           ],

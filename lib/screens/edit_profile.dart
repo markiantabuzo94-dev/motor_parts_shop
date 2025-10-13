@@ -1,4 +1,3 @@
-// lib/pages/edit_profile.dart
 import 'package:flutter/material.dart';
 import '../hive_service/hive_service.dart';
 
@@ -27,7 +26,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Use editProfile to handle username unchanged logic if needed
     await HiveService.updateUserProfile(
       firstName: firstName ?? '',
       lastName: lastName ?? '',
@@ -38,7 +36,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Profile updated'),
-        backgroundColor: Colors.black87,
+        backgroundColor: Color(0xFFB98E5F), // brown accent
       ),
     );
     Navigator.pop(context);
@@ -47,10 +45,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: const Color(0xFFF5DEB3), // light brown background
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFB98E5F), // brown appbar
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -60,10 +58,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
             children: [
               TextFormField(
                 initialValue: firstName,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.brown),
                 decoration: const InputDecoration(
                   labelText: 'First name',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: Colors.brown),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.brown),
+                  ),
                 ),
                 onChanged: (v) => firstName = v,
                 validator: (v) =>
@@ -72,10 +73,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 12),
               TextFormField(
                 initialValue: lastName,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.brown),
                 decoration: const InputDecoration(
                   labelText: 'Last name',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: Colors.brown),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.brown),
+                  ),
                 ),
                 onChanged: (v) => lastName = v,
                 validator: (v) =>
@@ -84,10 +88,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 12),
               TextFormField(
                 initialValue: email,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.brown),
                 decoration: const InputDecoration(
                   labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: Colors.brown),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.brown),
+                  ),
                 ),
                 onChanged: (v) => email = v,
                 validator: (v) => (v == null || !v.contains('@'))
@@ -97,7 +104,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purpleAccent,
+                  backgroundColor: const Color(0xFFB98E5F),
                   minimumSize: const Size.fromHeight(45),
                 ),
                 onPressed: _save,

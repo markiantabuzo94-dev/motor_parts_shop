@@ -12,7 +12,8 @@ part of 'product_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 ProductModel _$ProductModelFromJson(Map<String, dynamic> json) {
   return _ProductModel.fromJson(json);
@@ -40,15 +41,17 @@ mixin _$ProductModel {
 /// @nodoc
 abstract class $ProductModelCopyWith<$Res> {
   factory $ProductModelCopyWith(
-          ProductModel value, $Res Function(ProductModel) then) =
-      _$ProductModelCopyWithImpl<$Res, ProductModel>;
+    ProductModel value,
+    $Res Function(ProductModel) then,
+  ) = _$ProductModelCopyWithImpl<$Res, ProductModel>;
   @useResult
-  $Res call(
-      {@HiveField(0) String name,
-      @HiveField(1) String desc,
-      @HiveField(2) int price,
-      @HiveField(3) String image,
-      @HiveField(4) String category});
+  $Res call({
+    @HiveField(0) String name,
+    @HiveField(1) String desc,
+    @HiveField(2) int price,
+    @HiveField(3) String image,
+    @HiveField(4) String category,
+  });
 }
 
 /// @nodoc
@@ -70,28 +73,31 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? image = null,
     Object? category = null,
   }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      desc: null == desc
-          ? _value.desc
-          : desc // ignore: cast_nullable_to_non_nullable
-              as String,
-      price: null == price
-          ? _value.price
-          : price // ignore: cast_nullable_to_non_nullable
-              as int,
-      image: null == image
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
-              as String,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            desc: null == desc
+                ? _value.desc
+                : desc // ignore: cast_nullable_to_non_nullable
+                      as String,
+            price: null == price
+                ? _value.price
+                : price // ignore: cast_nullable_to_non_nullable
+                      as int,
+            image: null == image
+                ? _value.image
+                : image // ignore: cast_nullable_to_non_nullable
+                      as String,
+            category: null == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -99,16 +105,18 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
 abstract class _$$ProductModelImplCopyWith<$Res>
     implements $ProductModelCopyWith<$Res> {
   factory _$$ProductModelImplCopyWith(
-          _$ProductModelImpl value, $Res Function(_$ProductModelImpl) then) =
-      __$$ProductModelImplCopyWithImpl<$Res>;
+    _$ProductModelImpl value,
+    $Res Function(_$ProductModelImpl) then,
+  ) = __$$ProductModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@HiveField(0) String name,
-      @HiveField(1) String desc,
-      @HiveField(2) int price,
-      @HiveField(3) String image,
-      @HiveField(4) String category});
+  $Res call({
+    @HiveField(0) String name,
+    @HiveField(1) String desc,
+    @HiveField(2) int price,
+    @HiveField(3) String image,
+    @HiveField(4) String category,
+  });
 }
 
 /// @nodoc
@@ -116,8 +124,9 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     extends _$ProductModelCopyWithImpl<$Res, _$ProductModelImpl>
     implements _$$ProductModelImplCopyWith<$Res> {
   __$$ProductModelImplCopyWithImpl(
-      _$ProductModelImpl _value, $Res Function(_$ProductModelImpl) _then)
-      : super(_value, _then);
+    _$ProductModelImpl _value,
+    $Res Function(_$ProductModelImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -128,28 +137,15 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? image = null,
     Object? category = null,
   }) {
-    return _then(_$ProductModelImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      desc: null == desc
-          ? _value.desc
-          : desc // ignore: cast_nullable_to_non_nullable
-              as String,
-      price: null == price
-          ? _value.price
-          : price // ignore: cast_nullable_to_non_nullable
-              as int,
-      image: null == image
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
-              as String,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+    return _then(
+      _$ProductModelImpl(
+        name: null == name ? _value.name : name as String,
+        desc: null == desc ? _value.desc : desc as String,
+        price: null == price ? _value.price : price as int,
+        image: null == image ? _value.image : image as String,
+        category: null == category ? _value.category : category as String,
+      ),
+    );
   }
 }
 
@@ -157,12 +153,13 @@ class __$$ProductModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 @HiveType(typeId: 0, adapterName: 'ProductModelAdapter')
 class _$ProductModelImpl with DiagnosticableTreeMixin implements _ProductModel {
-  const _$ProductModelImpl(
-      {@HiveField(0) required this.name,
-      @HiveField(1) required this.desc,
-      @HiveField(2) required this.price,
-      @HiveField(3) required this.image,
-      @HiveField(4) required this.category});
+  const _$ProductModelImpl({
+    @HiveField(0) required this.name,
+    @HiveField(1) required this.desc,
+    @HiveField(2) required this.price,
+    @HiveField(3) required this.image,
+    @HiveField(4) required this.category,
+  });
 
   factory _$ProductModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductModelImplFromJson(json);
@@ -226,19 +223,18 @@ class _$ProductModelImpl with DiagnosticableTreeMixin implements _ProductModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ProductModelImplToJson(
-      this,
-    );
+    return _$$ProductModelImplToJson(this);
   }
 }
 
 abstract class _ProductModel implements ProductModel {
-  const factory _ProductModel(
-      {@HiveField(0) required final String name,
-      @HiveField(1) required final String desc,
-      @HiveField(2) required final int price,
-      @HiveField(3) required final String image,
-      @HiveField(4) required final String category}) = _$ProductModelImpl;
+  const factory _ProductModel({
+    @HiveField(0) required final String name,
+    @HiveField(1) required final String desc,
+    @HiveField(2) required final int price,
+    @HiveField(3) required final String image,
+    @HiveField(4) required final String category,
+  }) = _$ProductModelImpl;
 
   factory _ProductModel.fromJson(Map<String, dynamic> json) =
       _$ProductModelImpl.fromJson;

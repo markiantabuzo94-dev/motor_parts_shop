@@ -28,10 +28,10 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: const Color(0xFFD2B48C),
 
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFB99976),
         title: const Text(
           "Yeji Motor Shop",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -51,11 +51,11 @@ class _HomePageState extends State<HomePage> {
 
       bottomNavigationBar: !kIsWeb
           ? BottomNavigationBar(
-              backgroundColor: Colors.black,
+              backgroundColor: const Color(0xFFB99976),
               currentIndex: _currentIndex,
               onTap: (index) => setState(() => _currentIndex = index),
-              selectedItemColor: Colors.purpleAccent,
-              unselectedItemColor: Colors.white54,
+              selectedItemColor: Colors.deepPurple,
+              unselectedItemColor: Colors.white70,
               items: const [
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
                 BottomNavigationBarItem(
@@ -78,13 +78,13 @@ class _HomePageState extends State<HomePage> {
       onPressed: () => setState(() => _currentIndex = index),
       icon: Icon(
         icon,
-        color: isSelected ? Colors.purpleAccent : Colors.white,
+        color: isSelected ? Colors.deepPurple : Colors.white,
         size: 22,
       ),
       label: Text(
         label,
         style: TextStyle(
-          color: isSelected ? Colors.purpleAccent : Colors.white,
+          color: isSelected ? Colors.deepPurple : Colors.white,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -115,13 +115,13 @@ class _HomePageState extends State<HomePage> {
                 vertical: 16,
               ),
               child: TextField(
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   hintText: "Search products...",
-                  hintStyle: const TextStyle(color: Colors.white54),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                  hintStyle: const TextStyle(color: Colors.black54),
+                  prefixIcon: const Icon(Icons.search, color: Colors.black87),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: const Color(0xFFEED9C4),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
@@ -164,13 +164,13 @@ class _HomePageState extends State<HomePage> {
               child: ChoiceChip(
                 label: Text(label),
                 selected: _selectedCategory == label,
-                selectedColor: Colors.purple,
+                selectedColor: Colors.deepPurple,
                 labelStyle: TextStyle(
                   color: _selectedCategory == label
                       ? Colors.white
-                      : Colors.white70,
+                      : Colors.brown[800],
                 ),
-                backgroundColor: Colors.grey[850],
+                backgroundColor: const Color(0xFFEED9C4),
                 onSelected: (_) => setState(() => _selectedCategory = label),
               ),
             ),
@@ -222,16 +222,16 @@ class _HomePageState extends State<HomePage> {
               ..translate(0.0, hovered && isWeb ? -6.0 : 0.0)
               ..scale(hovered && isWeb ? 1.02 : 1.0),
             decoration: BoxDecoration(
-              color: Colors.grey[850],
+              color: const Color(0xFFF5E4C3),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 if (hovered && isWeb)
                   BoxShadow(
-                    color: Colors.purpleAccent.withOpacity(0.4),
+                    color: Colors.deepPurple.withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
-                BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 6),
+                BoxShadow(color: Colors.brown.withOpacity(0.2), blurRadius: 6),
               ],
             ),
             child: Column(
@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.brown,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -270,7 +270,7 @@ class _HomePageState extends State<HomePage> {
                         product.desc,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.white70,
+                          color: Colors.brown,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -279,7 +279,7 @@ class _HomePageState extends State<HomePage> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Colors.purpleAccent,
+                          color: Colors.deepPurple,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -299,7 +299,7 @@ class _HomePageState extends State<HomePage> {
                               "Added to cart!",
                               style: TextStyle(color: Colors.white),
                             ),
-                            backgroundColor: Colors.black87,
+                            backgroundColor: Colors.deepPurple,
                           ),
                         );
                       }),
@@ -339,7 +339,7 @@ class _HomePageState extends State<HomePage> {
     children: [
       Image.asset(img, fit: BoxFit.cover),
       Container(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withOpacity(0.3),
         alignment: Alignment.center,
         child: Text(
           text,
@@ -353,7 +353,11 @@ class _HomePageState extends State<HomePage> {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.brown,
+      ),
     ),
   );
 }
