@@ -63,9 +63,8 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🎨 Light brown tones for the new theme
-    final lightBrown = const Color(0xFFD2B48C); // tan
-    final darkerBrown = const Color(0xFF8B7355); // brown accent
+    final lightBrown = const Color(0xFFD2B48C);
+    final darkerBrown = const Color(0xFF8B7355);
 
     return Scaffold(
       appBar: AppBar(
@@ -175,7 +174,6 @@ class _CartPageState extends State<CartPage> {
                     ),
             ),
 
-            // 💰 Total + Checkout button
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               decoration: BoxDecoration(

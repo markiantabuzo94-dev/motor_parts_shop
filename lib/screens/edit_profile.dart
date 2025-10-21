@@ -36,7 +36,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Profile updated'),
-        backgroundColor: Color(0xFFB98E5F), // brown accent
+        backgroundColor: Color(0xFFB98E5F), 
       ),
     );
     Navigator.pop(context);
@@ -45,10 +45,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5DEB3), // light brown background
+      backgroundColor: const Color(0xFFF5DEB3), 
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        backgroundColor: const Color(0xFFB98E5F), // brown appbar
+        backgroundColor: const Color(0xFFB98E5F), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

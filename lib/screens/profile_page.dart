@@ -34,7 +34,6 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // 🧑‍🦱 Profile Picture
               CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage(
@@ -44,7 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 12),
 
-              // 👤 User Name
               Text(
                 displayName,
                 style: const TextStyle(
@@ -55,18 +53,16 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 4),
 
-              // 📧 Email
               Text(email, style: const TextStyle(color: Colors.brown)),
               const SizedBox(height: 18),
 
-              // ✏️ Edit Profile Button
               ElevatedButton(
                 onPressed: () async {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const EditProfilePage()),
                   );
-                  setState(() {}); // refresh after editing
+                  setState(() {});
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFB98E5F),
@@ -76,7 +72,6 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 20),
               const Divider(color: Colors.brown),
 
-              // 📱 Menu Options
               ListTile(
                 leading: const Icon(Icons.payment, color: Colors.brown),
                 title: const Text(
@@ -158,7 +153,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
               ),
 
-              // 🧾 Order History
               ListTile(
                 leading: const Icon(Icons.history, color: Colors.brown),
                 title: const Text(
@@ -174,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const Divider(color: Colors.brown),
 
-              // 🚪 Log Out
+
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.redAccent),
                 title: const Text(

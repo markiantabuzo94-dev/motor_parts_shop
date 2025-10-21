@@ -13,14 +13,14 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD2B48C), // 🟤 same as homepage
+      backgroundColor: const Color(0xFFD2B48C), 
       appBar: AppBar(
         title: const Text(
           "Payment",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFFB99976), // 🟤 same as homepage AppBar
+        backgroundColor: const Color(0xFFB99976), 
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
@@ -38,7 +38,6 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
             const SizedBox(height: 12),
 
-            // ✅ Payment options
             _buildPaymentOption("GCash", Icons.phone_android),
             _buildPaymentOption("PayMaya", Icons.account_balance_wallet),
             _buildPaymentOption("Cash on Delivery", Icons.local_shipping),

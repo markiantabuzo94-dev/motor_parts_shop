@@ -149,7 +149,6 @@ class __$$ProductModelImplCopyWithImpl<$Res>
   }
 }
 
-/// @nodoc
 @JsonSerializable()
 @HiveType(typeId: 0, adapterName: 'ProductModelAdapter')
 class _$ProductModelImpl with DiagnosticableTreeMixin implements _ProductModel {

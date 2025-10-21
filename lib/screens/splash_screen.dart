@@ -18,9 +18,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initialize() async {
-    // Wait for session to refresh properly
+  
     await HiveService.refreshSession();
-    await Future.delayed(const Duration(milliseconds: 800)); // smooth UX
+    await Future.delayed(const Duration(milliseconds: 800));
 
     final bool loggedIn = HiveService.currentUsername != null;
 

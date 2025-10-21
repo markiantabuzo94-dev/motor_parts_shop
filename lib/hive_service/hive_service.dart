@@ -11,7 +11,6 @@ class HiveService {
 
   static String? currentUsername;
 
-  // ✅ Initialize boxes
   static Future<void> init() async {
     userBox = await Hive.openBox<User>('users');
     cartBox = await Hive.openBox('cart');
@@ -31,7 +30,6 @@ class HiveService {
     currentUsername = null;
   }
 
-  // 🧍‍♂️ User Handling
   static Future<bool> saveUser({
     required String firstName,
     required String lastName,
@@ -162,7 +160,6 @@ class HiveService {
     await userBox.put(currentUsername!, updated);
   }
 
-  // 🏪 Products
   static Future<void> initDefaultProducts() async {
     final defaultProducts = [
       ProductModel(
@@ -213,7 +210,6 @@ class HiveService {
     return productBox.values.toList();
   }
 
-  // 🛒 Cart
   static List<Map<String, dynamic>> getCart() {
     if (currentUsername == null) return [];
     final rawList = cartBox.get(currentUsername!, defaultValue: []);
@@ -261,7 +257,6 @@ class HiveService {
     await cartBox.put(currentUsername!, []);
   }
 
-  // ✅ FIXED checkout
   static Future<void> checkout() async {
     if (currentUsername == null) return;
 
@@ -293,7 +288,7 @@ class HiveService {
     await clearCart();
   }
 
-  // ✅ FIXED getOrders
+
   static List<Map<String, dynamic>> getOrders() {
     if (currentUsername == null) return [];
 
@@ -305,7 +300,7 @@ class HiveService {
     );
   }
 
-  // 🧠 Helpers
+
   static Future<void> ensureBoxesOpen() async {
     if (!Hive.isBoxOpen('users')) {
       userBox = await Hive.openBox<User>('users');

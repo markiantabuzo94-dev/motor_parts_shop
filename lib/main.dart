@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Yeji Motor Shop',
         theme: ThemeData.dark(),
-        home: const SplashScreen(), // 👈 Show splash first
+        home: const SplashScreen(),
         routes: {
           "/loginpage": (_) => const LoginPage(),
           "/signup": (_) => const SignUpPage(),

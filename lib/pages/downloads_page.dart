@@ -41,7 +41,6 @@ class DownloadsPage extends StatelessWidget {
       ),
     );
 
-    // 💾 This opens the PDF download/save dialog
     await Printing.sharePdf(
       bytes: await pdf.save(),
       filename: 'receipt_${order['id']}.pdf',
